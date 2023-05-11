@@ -1,8 +1,7 @@
 # Poker Planning API
 
-### This API is a Poker Planning server to be consumed with Socket.io events, allowing you to connect multiple clients and keep record of the rooms stored in Redis.
+#### This API is a Poker Planning server to be consumed with Socket.io events, allowing you to connect multiple clients and keep record of the rooms stored in Redis.
 
-#
 
 ## Environment Variables
 
@@ -12,16 +11,13 @@
 
 `REDIS_DB` Database url including protocol.
 
----
-
-### Tech stack:
+## Tech stack
 
 - TypeScript
 - Node.js / Express
 - Socket.io
 - Redis
 
-#
 
 ## Events
 
