@@ -46,10 +46,10 @@ The only events emitted by the server (excluding callbacks) are `refresh-cards` 
 
 |    Event    | Params |       Callback        | Description                         |
 | :---------: | :----: | :-------------------: | :---------------------------------- |
-| create-room |   X    |   `new-room` - IRoom   | Create a new room.                  |
-|  get-rooms  |   X    | `all-rooms` - RoomMap | Get all available rooms.            |
-|  get-room   |   X    |   `get-room` - IRoom   | Get information on a specific room. |
-|  join-room  | roomId | `selected-room` - IRoom | Joins user to specific room.        |
+| create-room |   X    |   `new-room` - [IRoom](#iroom)   | Create a new room.                  |
+|  get-rooms  |   X    | `all-rooms` - [RoomMap](#roommap)  | Get all available rooms.            |
+|  get-room   |   X    |   `get-room` - [IRoom](#iroom)    | Get information on a specific room. |
+|  join-room  | roomId | `selected-room` - [IRoom](#iroom)  | Joins user to specific room.        |
 | delete-room | roomId |           X           | Deletes the room.                   |
 
 ### Server
