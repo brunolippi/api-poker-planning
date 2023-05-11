@@ -1,11 +1,11 @@
 # Poker Planning API
 
-#### This API is a Poker Planning server to be consumed with Socket.io events, allowing you to connect multiple clients and keep record of the rooms stored in Redis.
+> This API is a Poker Planning server to be consumed with Socket.io events, allowing you to connect multiple clients and keep record of the rooms stored in Redis.
 
 
 ## Environment Variables
 
-> To run this project, you will need to add the following environment variables to your .env file.
+ To run this project, you will need to add the following environment variables to your .env file.
 
 `PORT` API port.
 
