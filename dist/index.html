@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Hello!</title>
+</head>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+    .card {
+        border-radius: 5px;
+        border: 1px solid black;
+        margin: 0px 20px;
+        text-align: center;
+    }
+
+    .member {
+        min-width: 30px;
+        min-height: 40px;
+    }
+</style>
+<script>
+    const getById = (id) => document.getElementById(id)
+    const socket = io();
+    socket.emit("get-rooms")
+    socket.on('test', (data) => console.log(data))
+    function newRoom() {
+        return socket.emit("create-room")
+    }
+    function getRooms() {
+        return socket.emit("get-rooms")
+    }
+
+    function displayCards(cards) {
+        const deck = getById("card-deck")
+        deck.innerHTML = null
+        cards.forEach((card, index) => {
+            const div = document.createElement("div")
+            div.className = "card"
+            const p = document.createElement("p")
+            p.innerText = card
+            const button = document.createElement("button")
+            button.innerText = "Pick"
+            button.addEventListener("click", () => { socket.emit("pick-card", index); })
+            div.append(p, button)
+            deck.append(div)
+        })
+        getById("flip-cards").addEventListener("click", () => { socket.emit("flip-cards"); })
+    }
+
+    function displayPlayRoom(newRoom) {
+        getById('select-deck').style.display = 'none';
+        getById('play-room').style.display = 'flex';
+
+        getById("room-name").innerText = newRoom.id;
+        displayMembers(newRoom)
+        const selectedDeck = newRoom.availableDecks.find(d => d.id === newRoom.selectedDeck)
+        getById("cards-name").innerHTML = selectedDeck.name
+        displayCards(selectedDeck.cards)
+    }
+
+    function displayMembers(room) {
+        const roomMembersDiv = getById("room-members")
+        const members = Object.entries(room.members)
+        const selectedDeck = room.availableDecks.find(d => d.id === room.selectedDeck)
+        roomMembersDiv.innerHTML = null
+        for (const [id, member] of members) {
+            const div = document.createElement("div")
+            div.className = "member card"
+            const b = document.createElement("b")
+            b.innerText = member.name
+            const p = document.createElement("p")
+            p.innerText = selectedDeck.cards[member.card] ?? "-"
+            div.append(b, p)
+            roomMembersDiv.append(div)
+        }
+    }
+
+    socket.on('refresh-rooms', () => getRooms())
+    socket.on('refresh-cards', () => socket.emit('get-room'))
+
+    socket.on('get-room', (room) => displayPlayRoom(room))
+
+    socket.on('selected-room', (newRoom) => {
+        getById('room-lobby').style.display = 'none';
+        const roomDiv = getById('room');
+        roomDiv.style.display = 'block'
+        if (newRoom.selectedDeck === 0) {
+            getById('select-deck').style.display = 'block'
+            newRoom.availableDecks.forEach((deck) => {
+                const p = document.createElement("p");
+                p.innerText = JSON.stringify(deck)
+                const button = document.createElement("button");
+                button.innerText = "Select"
+                button.addEventListener("click", () => { socket.emit("select-deck", deck.id); displayPlayRoom(newRoom) })
+                getById("deck-list").append(p, button)
+            })
+        } else {
+            displayPlayRoom(newRoom)
+        }
+    })
+
+    socket.on('all-rooms', (rooms) => {
+        console.log("all-rooms", rooms)
+        getById("room-list").innerHTML = null
+        Object.entries(rooms).forEach(([roomId, room]) => {
+            const title = document.createElement("h4");
+            title.innerText = room.id
+            const p = document.createElement("p");
+            p.innerText = Object.keys(room.members).length ? JSON.stringify(room.members) : "No members"
+            const button = document.createElement("button");
+            button.innerText = "Join"
+            button.addEventListener("click", () => socket.emit("join-room", roomId))
+            const deleteButton = document.createElement("button");
+            deleteButton.innerText = "Delete"
+            deleteButton.addEventListener("click", () => socket.emit("delete-room", roomId))
+            getById("room-list").append(title, p, button, deleteButton)
+        })
+    })
+</script>
+
+<body>
+    <h1>Integrating Socket.io with Node.js and Express</h1>
+    <div id="room-lobby">
+        <button id="btn-new-room" onclick="getRooms()">Get Rooms</button>
+        <button id="btn-new-room" onclick="newRoom()">New Room</button>
+        <h2>Rooms</h2>
+        <div id="room-list"></div>
+    </div>
+    <div id="room" style="display: none;">
+        <div id="select-deck" style="display: none;">
+            <h2>Select a Deck</h2>
+            <div id="deck-list"></div>
+        </div>
+        <div id="play-room" style="display: none; flex-direction: column;">
+            <h2>Play Room</h2>
+            <div id="room-info">
+                <h4>Room Info</h4>
+                <h5>Room Name</h5>
+                <p id="room-name"></p>
+                <h5>Room Members</h5>
+                <div id="room-members" style="display: flex!important; flex-direction: row;"></div>
+                <button id="flip-cards">Flip ALL</button>
+            </div>
+            <h4>Cards: <span id="cards-name"></span></h4>
+            <div id="card-deck" style="display: flex!important; flex-direction: row;"></div>
+        </div>
+    </div>
+</body>
+
+</html>
