@@ -78,6 +78,15 @@ The only events emitted by the server (excluding callbacks) are `refresh-cards` 
 }
 ```
 
+### IDeckList
+```
+{
+  id: number;
+  name: string;
+  cards: string[] | number[];
+}
+```
+
 ### MemberMap
 ```
 {
